@@ -20,11 +20,7 @@ AZURE_SEARCH_ENDPOINT = os.getenv("AZURE_SEARCH_ENDPOINT")
 AZURE_SEARCH_KEY = os.getenv("AZURE_SEARCH_KEY")
 AZURE_SEARCH_INDEX = os.getenv("AZURE_SEARCH_INDEX")
 
-# Affichage debug dans la sidebar
-st.sidebar.title("🔧 Debug Azure")
-st.sidebar.write("🔁 Endpoint:", AZURE_OPENAI_ENDPOINT or "❌ Non défini")
-st.sidebar.write("🗝️ Clé OpenAI:", (AZURE_OPENAI_KEY[:5] + "*****") if AZURE_OPENAI_KEY else "❌ Non défini")
-st.sidebar.write("📦 Déploiement:", AZURE_OPENAI_DEPLOYMENT or "❌ Non défini")
+
 
 # Vérification des variables obligatoires
 if not all([AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_KEY, AZURE_OPENAI_DEPLOYMENT]):
@@ -39,7 +35,7 @@ client = AzureOpenAI(
 )
 
 # Titre de l'application
-st.title("🤖 Assistant Daxium (Azure OpenAI + Search)")
+st.title(" Assistant Daxium ")
 
 # Initialiser l'historique de messages
 if "messages" not in st.session_state:
