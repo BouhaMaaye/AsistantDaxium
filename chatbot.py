@@ -1,17 +1,11 @@
 import streamlit as st
 
-# 👉 La toute première commande Streamlit
 st.set_page_config(page_title="Assistant Daxium", page_icon="🤖")
-
-# Imports
 from openai import AzureOpenAI
 import os
 from dotenv import load_dotenv
 
-# Charger les variables d'environnement
 load_dotenv()
-
-# Lire les variables depuis .env
 AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
 AZURE_OPENAI_KEY = os.getenv("AZURE_OPENAI_KEY")
 AZURE_OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT")
@@ -21,42 +15,35 @@ AZURE_SEARCH_KEY = os.getenv("AZURE_SEARCH_KEY")
 AZURE_SEARCH_INDEX = os.getenv("AZURE_SEARCH_INDEX")
 
 
-
-# Vérification des variables obligatoires
 if not all([AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_KEY, AZURE_OPENAI_DEPLOYMENT]):
     st.error("❌ Vérifie ton fichier .env : une ou plusieurs variables sont manquantes.")
     st.stop()
 
-# Initialiser le client Azure OpenAI
 client = AzureOpenAI(
     api_key=AZURE_OPENAI_KEY,
     api_version="2024-05-01-preview",
     azure_endpoint=AZURE_OPENAI_ENDPOINT
 )
 
-# Titre de l'application
 st.title(" Assistant Daxium ")
 
-# Initialiser l'historique de messages
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {
             "role": "system",
-            "content": "You are an AI assistant integrated with Daxium software. Your primary role is to professionally provide accurate and clear answers about the software's functionalities and procedures. Respond directly and concisely, without mentioning sources. If the information is unavailable or the user requires additional guidance, suggest consulting the dedicated Teams channel for support. If the user asks a question unrelated to Daxium or if the question is unclear, politely inform them that you are specialized in Daxium and request that they ask questions specifically related to the software."
+            "content": "You are an AI assistant integrated with Daxium software. Your primary role is to help users by providing accurate and clear answers to their questions about the software's functionalities and procedures. If you do not have the information they need or if the user is unable to follow the provided instructions, kindly suggest that they ask their question on the dedicated Teams channel for further assistance. Always strive to be helpful, polite, and concise. if have a link please give the link "
         }
     ]
 
-# Affichage de l'historique
 for msg in st.session_state.messages[1:]:
     st.chat_message(msg["role"]).write(msg["content"])
 
-# Zone de saisie utilisateur
 if prompt := st.chat_input("Pose ta question sur Daxium ici..."):
     st.chat_message("user").write(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     try:
-        # Appel Azure OpenAI avec Azure Search (RAG)
+        # Azure OpenAI avec Azure Search (RAG)
         completion = client.chat.completions.create(
             model=AZURE_OPENAI_DEPLOYMENT,
             messages=st.session_state.messages,
@@ -91,7 +78,6 @@ if prompt := st.chat_input("Pose ta question sur Daxium ici..."):
             }
         )
 
-        # Afficher la réponse
         assistant_reply = completion.choices[0].message.content
         st.chat_message("assistant").write(assistant_reply)
         st.session_state.messages.append({"role": "assistant", "content": assistant_reply})
